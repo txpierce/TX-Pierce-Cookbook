@@ -6,41 +6,47 @@
   <title>The Pierce Cookbook - Search & Filter</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen p-6">
+<body class="bg-gray-950 text-gray-100 min-h-screen p-4 sm:p-6 font-sans">
   <div class="max-w-6xl mx-auto">
+    <!-- Header -->
     <header class="text-center mb-8">
-      <h1 class="text-4xl font-extrabold text-amber-500 mb-2">🔥 The Pierce Cookbook</h1>
-      <p class="text-gray-400">Search smoked meats, meal preps, slow cooker favorites, and macro recipes</p>
+      <h1 class="text-4xl sm:text-5xl font-black text-amber-500 tracking-tight mb-2">🔥 The Pierce Cookbook</h1>
+      <p class="text-gray-400 text-sm sm:text-base">Search smoked meats, meal preps, slow cooker favorites & high-protein recipes</p>
     </header>
 
-    <div class="bg-gray-800 p-6 rounded-xl shadow-lg mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+    <!-- Filter Bar -->
+    <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl shadow-xl mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
       <div>
-        <label class="block text-sm font-semibold mb-1 text-gray-300">Keyword / Ingredient</label>
-        <input type="text" id="searchInput" placeholder="e.g. Brisket, Oats, Shrimp..." 
-               class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500">
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Keyword / Ingredient</label>
+        <input type="text" id="searchInput" placeholder="e.g. Brisket, Oats, Garlic..." 
+               class="w-full bg-gray-800 border border-gray-700 rounded-xl p-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
       </div>
       <div>
-        <label class="block text-sm font-semibold mb-1 text-gray-300">Category</label>
-        <select id="categoryFilter" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Category</label>
+        <select id="categoryFilter" class="w-full bg-gray-800 border border-gray-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500">
           <option value="">All Categories</option>
           <option value="Barbecue & Smoker">Barbecue & Smoker</option>
           <option value="High-Protein & Meal Prep">High-Protein & Meal Prep</option>
           <option value="Crockpot & Slow Cooker">Crockpot & Slow Cooker</option>
+          <option value="Soups, Sides & Sauces">Soups, Sides & Sauces</option>
+          <option value="Miscellaneous & Sauces">Miscellaneous & Sauces</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-semibold mb-1 text-gray-300">Cook Method</label>
-        <select id="cookTypeFilter" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Cook Method</label>
+        <select id="cookTypeFilter" class="w-full bg-gray-800 border border-gray-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500">
           <option value="">All Cook Methods</option>
           <option value="Smoker">Smoker</option>
+          <option value="Pellet Grill">Pellet Grill</option>
           <option value="Stovetop">Stovetop</option>
           <option value="Slow Cooker">Slow Cooker</option>
+          <option value="Air Fryer">Air Fryer</option>
           <option value="No-Cook">No-Cook</option>
         </select>
       </div>
       <div>
-        <label class="block text-sm font-semibold mb-1 text-gray-300">Max Cook Time</label>
-        <select id="timeFilter" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Max Cook Time</label>
+        <select id="timeFilter" class="w-full bg-gray-800 border border-gray-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500">
           <option value="9999">Any Duration</option>
           <option value="30">Under 30 Mins</option>
           <option value="60">Under 1 Hour</option>
@@ -49,8 +55,94 @@
       </div>
     </div>
 
+    <!-- Recipe Cards Grid -->
     <div id="recipeGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div class="col-span-full text-center text-gray-400 py-12">Loading recipes from Google Sheets...</div>
+      <div class="col-span-full text-center text-gray-500 py-16">
+        <svg class="animate-spin h-8 w-8 text-amber-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Loading your recipes from Google Sheets...
+      </div>
+    </div>
+  </div>
+
+  <!-- COOKBOOK RECIPE MODAL VIEW -->
+  <div id="recipeModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+    <div class="bg-gray-900 border border-gray-700 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative flex flex-col">
+      
+      <!-- Modal Header Bar -->
+      <div class="sticky top-0 bg-gray-900/95 backdrop-blur-md px-6 py-4 border-b border-gray-800 flex justify-between items-center z-10">
+        <span id="modalCategory" class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/70 border border-amber-800/50 px-3 py-1 rounded-full">Category</span>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 p-2 rounded-full transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <!-- Modal Main Body -->
+      <div class="p-6 sm:p-8 space-y-6">
+        
+        <!-- Recipe Title & Meta -->
+        <div>
+          <h2 id="modalTitle" class="text-3xl sm:text-4xl font-black text-white tracking-tight mb-3">Recipe Name</h2>
+          <div class="flex flex-wrap gap-4 text-sm text-gray-300 bg-gray-800/60 p-3.5 rounded-2xl border border-gray-800">
+            <div>🔥 <strong class="text-gray-400">Method:</strong> <span id="modalCookType">Method</span></div>
+            <div>🌡️ <strong class="text-gray-400">Temp:</strong> <span id="modalTemp">Temp</span></div>
+            <div>⏱️ <strong class="text-gray-400">Time:</strong> <span id="modalTime">Time</span></div>
+            <div>🍽️ <strong class="text-gray-400">Servings:</strong> <span id="modalServings">Servings</span></div>
+          </div>
+        </div>
+
+        <!-- Macro Dashboard Card (if macros exist) -->
+        <div id="modalMacrosContainer" class="hidden bg-gradient-to-r from-amber-950/40 via-gray-800 to-amber-950/40 border border-amber-500/30 p-4 rounded-2xl">
+          <h4 class="text-xs uppercase font-bold text-amber-400 tracking-wider mb-2.5 text-center">Nutrition Per Serving</h4>
+          <div class="grid grid-cols-4 gap-2 text-center">
+            <div class="bg-gray-900/90 p-2.5 rounded-xl border border-gray-800">
+              <span class="block text-xs text-gray-400 font-medium">Calories</span>
+              <span id="modalCalories" class="text-lg font-black text-amber-400">0</span>
+            </div>
+            <div class="bg-gray-900/90 p-2.5 rounded-xl border border-gray-800">
+              <span class="block text-xs text-gray-400 font-medium">Protein</span>
+              <span id="modalProtein" class="text-lg font-black text-emerald-400">0g</span>
+            </div>
+            <div class="bg-gray-900/90 p-2.5 rounded-xl border border-gray-800">
+              <span class="block text-xs text-gray-400 font-medium">Carbs</span>
+              <span id="modalCarbs" class="text-lg font-black text-blue-400">0g</span>
+            </div>
+            <div class="bg-gray-900/90 p-2.5 rounded-xl border border-gray-800">
+              <span class="block text-xs text-gray-400 font-medium">Fat</span>
+              <span id="modalFat" class="text-lg font-black text-rose-400">0g</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ingredients Section -->
+        <div>
+          <h3 class="text-lg font-bold text-amber-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <span>🛒</span> Ingredients
+          </h3>
+          <div id="modalIngredients" class="bg-gray-800/40 border border-gray-800 p-4 rounded-2xl text-gray-200 leading-relaxed text-sm space-y-2">
+          </div>
+        </div>
+
+        <!-- Instructions Section -->
+        <div>
+          <h3 class="text-lg font-bold text-amber-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <span>👨‍🍳</span> Step-by-Step Instructions
+          </h3>
+          <div id="modalInstructions" class="bg-gray-800/40 border border-gray-800 p-4 rounded-2xl text-gray-200 leading-relaxed text-sm space-y-3">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bg-gray-900 px-6 py-4 border-t border-gray-800 text-right">
+        <button onclick="closeModal()" class="bg-amber-500 hover:bg-amber-600 text-gray-950 font-bold px-6 py-2.5 rounded-xl transition">
+          Close Recipe
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -65,45 +157,46 @@
         renderRecipes(allRecipes);
       } catch (err) {
         document.getElementById('recipeGrid').innerHTML = 
-          `<div class="col-span-full text-red-400 text-center">Failed to load recipes. Please check API URL.</div>`;
+          `<div class="col-span-full text-red-400 text-center py-12">Failed to load recipes. Please check API URL.</div>`;
       }
     }
 
     function renderRecipes(recipes) {
       const grid = document.getElementById('recipeGrid');
-      if (!recipes.length) {
-        grid.innerHTML = `<div class="col-span-full text-center text-gray-400 py-12">No matching recipes found.</div>`;
+      if (!recipes || !recipes.length) {
+        grid.innerHTML = `<div class="col-span-full text-center text-gray-500 py-16">No recipes found matching your search.</div>`;
         return;
       }
-      grid.innerHTML = recipes.map(r => `
-        <div class="bg-gray-800 rounded-xl p-5 border border-gray-700 flex flex-col justify-between hover:border-amber-500 transition">
+      grid.innerHTML = recipes.map((r, index) => `
+        <div onclick="openModal(${index})" 
+             class="bg-gray-900 border border-gray-800 hover:border-amber-500/70 rounded-2xl p-5 cursor-pointer transform hover:-translate-y-1 transition duration-200 shadow-lg flex flex-col justify-between group">
           <div>
-            <div class="flex justify-between items-start mb-2">
-              <span class="text-xs uppercase font-bold text-amber-400 bg-amber-950/60 px-2.5 py-1 rounded-md">${r["Category"]}</span>
-              <span class="text-xs text-gray-400">⏱️ ${r["Cook Time (mins)"]}m</span>
+            <div class="flex justify-between items-start mb-3">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-950/70 border border-amber-800/40 px-2.5 py-1 rounded-full">${r["Category"] || 'Recipe'}</span>
+              <span class="text-xs text-gray-400 font-medium">⏱️ ${r["Cook Time (mins)"] ? r["Cook Time (mins)"] + 'm' : 'N/A'}</span>
             </div>
-            <h2 class="text-xl font-bold text-white mb-2">${r["Recipe Name"]}</h2>
-            <p class="text-sm text-gray-400 mb-3">🔥 <strong>Method:</strong> ${r["Cook Type"]} | <strong>Temp:</strong> ${r["Cook Temp"]}</p>
             
-            ${r["Calories"] ? `
-              <div class="bg-gray-900/80 p-2.5 rounded-lg mb-3 grid grid-cols-4 text-center text-xs">
-                <div><span class="block text-gray-400">Cal</span><strong class="text-amber-400">${r["Calories"]}</strong></div>
-                <div><span class="block text-gray-400">Prot</span><strong class="text-emerald-400">${r["Protein (g)"]}g</strong></div>
-                <div><span class="block text-gray-400">Carb</span><strong class="text-blue-400">${r["Carbs (g)"]}g</strong></div>
-                <div><span class="block text-gray-400">Fat</span><strong class="text-rose-400">${r["Fat (g)"]}g</strong></div>
+            <h2 class="text-xl font-extrabold text-white group-hover:text-amber-400 transition mb-2">${r["Recipe Name"]}</h2>
+            <p class="text-xs text-gray-400 mb-4">🔥 <strong>${r["Cook Type"] || 'Cook'}</strong> ${r["Cook Temp"] ? '• ' + r["Cook Temp"] : ''}</p>
+            
+            ${(r["Calories"] || r["Protein (g)"]) ? `
+              <div class="bg-gray-950 p-2.5 rounded-xl grid grid-cols-4 text-center text-xs border border-gray-800/80 mb-3">
+                <div><span class="block text-[10px] text-gray-500 uppercase">Cal</span><strong class="text-amber-400">${r["Calories"] || '-'}</strong></div>
+                <div><span class="block text-[10px] text-gray-500 uppercase">Prot</span><strong class="text-emerald-400">${r["Protein (g)"] ? r["Protein (g)"] + 'g' : '-'}</strong></div>
+                <div><span class="block text-[10px] text-gray-500 uppercase">Carb</span><strong class="text-blue-400">${r["Carbs (g)"] ? r["Carbs (g)"] + 'g' : '-'}</strong></div>
+                <div><span class="block text-[10px] text-gray-500 uppercase">Fat</span><strong class="text-rose-400">${r["Fat (g)"] ? r["Fat (g)"] + 'g' : '-'}</strong></div>
               </div>` : ''}
+          </div>
 
-            <details class="text-xs text-gray-300 mt-2">
-              <summary class="cursor-pointer text-amber-400 font-semibold">View Ingredients & Instructions</summary>
-              <div class="mt-2 text-gray-300 space-y-2">
-                <p><strong>Ingredients:</strong> ${r["Ingredients"]}</p>
-                <p><strong>Instructions:</strong> ${r["Instructions"]}</p>
-              </div>
-            </details>
+          <div class="pt-3 border-t border-gray-800/60 flex justify-between items-center text-xs text-amber-400 font-bold group-hover:translate-x-1 transition">
+            <span>View Full Recipe</span>
+            <span>→</span>
           </div>
         </div>
       `).join('');
     }
+
+    let currentFiltered = [];
 
     function filterRecipes() {
       const q = document.getElementById('searchInput').value.toLowerCase();
@@ -111,15 +204,83 @@
       const cook = document.getElementById('cookTypeFilter').value;
       const maxTime = parseInt(document.getElementById('timeFilter').value);
 
-      const filtered = allRecipes.filter(r => {
-        const matchesQ = !q || r["Recipe Name"].toLowerCase().includes(q) || r["Ingredients"].toLowerCase().includes(q);
+      currentFiltered = allRecipes.filter(r => {
+        const name = (r["Recipe Name"] || "").toLowerCase();
+        const ing = (r["Ingredients"] || "").toLowerCase();
+        const matchesQ = !q || name.includes(q) || ing.includes(q);
         const matchesCat = !cat || r["Category"] === cat;
         const matchesCook = !cook || r["Cook Type"] === cook;
         const matchesTime = (parseInt(r["Cook Time (mins)"]) || 0) <= maxTime;
         return matchesQ && matchesCat && matchesCook && matchesTime;
       });
-      renderRecipes(filtered);
+
+      renderRecipes(currentFiltered);
     }
+
+    function openModal(index) {
+      const r = currentFiltered.length ? currentFiltered[index] : allRecipes[index];
+      if (!r) return;
+
+      document.getElementById('modalTitle').innerText = r["Recipe Name"] || "Recipe Details";
+      document.getElementById('modalCategory').innerText = r["Category"] || "General";
+      document.getElementById('modalCookType').innerText = r["Cook Type"] || "N/A";
+      document.getElementById('modalTemp').innerText = r["Cook Temp"] || "N/A";
+      document.getElementById('modalTime').innerText = r["Cook Time (mins)"] ? r["Cook Time (mins)"] + " mins" : "N/A";
+      document.getElementById('modalServings').innerText = r["Servings"] || "N/A";
+
+      // Macros
+      const macroBox = document.getElementById('modalMacrosContainer');
+      if (r["Calories"] || r["Protein (g)"]) {
+        document.getElementById('modalCalories').innerText = r["Calories"] || "0";
+        document.getElementById('modalProtein').innerText = (r["Protein (g)"] || "0") + "g";
+        document.getElementById('modalCarbs').innerText = (r["Carbs (g)"] || "0") + "g";
+        document.getElementById('modalFat').innerText = (r["Fat (g)"] || "0") + "g";
+        macroBox.classList.remove('hidden');
+      } else {
+        macroBox.classList.add('hidden');
+      }
+
+      // Ingredients formatting (bullet points)
+      const rawIng = r["Ingredients"] || "No ingredients listed.";
+      const ingArray = rawIng.split(/,|;|
+/).map(i => i.trim()).filter(i => i.length > 0);
+      document.getElementById('modalIngredients').innerHTML = ingArray.map(item => 
+        `<div class="flex items-start gap-2"><span class="text-amber-500 font-bold">•</span> <span>${item}</span></div>`
+      ).join('');
+
+      // Instructions formatting (step-by-step numbers)
+      const rawInst = r["Instructions"] || "No instructions listed.";
+      // Format numbered steps
+      let steps = rawInst.split(/(?=\d+\.\s)/).map(s => s.trim()).filter(s => s.length > 0);
+      if (steps.length <= 1) {
+        steps = rawInst.split(/
++/).map(s => s.trim()).filter(s => s.length > 0);
+      }
+      document.getElementById('modalInstructions').innerHTML = steps.map((step, idx) => `
+        <div class="flex items-start gap-3 bg-gray-900/60 p-3 rounded-xl border border-gray-800">
+          <span class="bg-amber-500/20 text-amber-400 font-black text-xs px-2.5 py-1 rounded-lg border border-amber-500/30">${idx + 1}</span>
+          <span class="text-gray-200">${step.replace(/^\d+\.\s*/, '')}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('recipeModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('recipeModal').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+
+    // Close on backdrop click
+    document.getElementById('recipeModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    // Close on Esc key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
 
     ['searchInput', 'categoryFilter', 'cookTypeFilter', 'timeFilter'].forEach(id => {
       document.getElementById(id).addEventListener('input', filterRecipes);
