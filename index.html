@@ -149,11 +149,13 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzMpcqFIDPFwvC-OJPy9_BfRZ5RKiiqKtQE8Uc23eeFLzis0vVfbrN55TunhssIBUkM/exec";
     let allRecipes = [];
+    let currentFiltered = [];
 
     async function fetchRecipes() {
       try {
         const res = await fetch(API_URL);
         allRecipes = await res.json();
+        currentFiltered = allRecipes;
         renderRecipes(allRecipes);
       } catch (err) {
         document.getElementById('recipeGrid').innerHTML = 
@@ -162,6 +164,7 @@
     }
 
     function renderRecipes(recipes) {
+      currentFiltered = recipes;
       const grid = document.getElementById('recipeGrid');
       if (!recipes || !recipes.length) {
         grid.innerHTML = `<div class="col-span-full text-center text-gray-500 py-16">No recipes found matching your search.</div>`;
@@ -196,15 +199,13 @@
       `).join('');
     }
 
-    let currentFiltered = [];
-
     function filterRecipes() {
       const q = document.getElementById('searchInput').value.toLowerCase();
       const cat = document.getElementById('categoryFilter').value;
       const cook = document.getElementById('cookTypeFilter').value;
       const maxTime = parseInt(document.getElementById('timeFilter').value);
 
-      currentFiltered = allRecipes.filter(r => {
+      const filtered = allRecipes.filter(r => {
         const name = (r["Recipe Name"] || "").toLowerCase();
         const ing = (r["Ingredients"] || "").toLowerCase();
         const matchesQ = !q || name.includes(q) || ing.includes(q);
@@ -214,7 +215,7 @@
         return matchesQ && matchesCat && matchesCook && matchesTime;
       });
 
-      renderRecipes(currentFiltered);
+      renderRecipes(filtered);
     }
 
     function openModal(index) {
@@ -242,19 +243,16 @@
 
       // Ingredients formatting (bullet points)
       const rawIng = r["Ingredients"] || "No ingredients listed.";
-      const ingArray = rawIng.split(/,|;|
-/).map(i => i.trim()).filter(i => i.length > 0);
+      const ingArray = String(rawIng).split(/[,;\n]/).map(i => i.trim()).filter(i => i.length > 0);
       document.getElementById('modalIngredients').innerHTML = ingArray.map(item => 
         `<div class="flex items-start gap-2"><span class="text-amber-500 font-bold">•</span> <span>${item}</span></div>`
       ).join('');
 
       // Instructions formatting (step-by-step numbers)
       const rawInst = r["Instructions"] || "No instructions listed.";
-      // Format numbered steps
-      let steps = rawInst.split(/(?=\d+\.\s)/).map(s => s.trim()).filter(s => s.length > 0);
+      let steps = String(rawInst).split(/(?=\d+\.\s)/).map(s => s.trim()).filter(s => s.length > 0);
       if (steps.length <= 1) {
-        steps = rawInst.split(/
-+/).map(s => s.trim()).filter(s => s.length > 0);
+        steps = String(rawInst).split(/\n+/).map(s => s.trim()).filter(s => s.length > 0);
       }
       document.getElementById('modalInstructions').innerHTML = steps.map((step, idx) => `
         <div class="flex items-start gap-3 bg-gray-900/60 p-3 rounded-xl border border-gray-800">
@@ -272,12 +270,10 @@
       document.body.style.overflow = 'auto';
     }
 
-    // Close on backdrop click
     document.getElementById('recipeModal').addEventListener('click', function(e) {
       if (e.target === this) closeModal();
     });
 
-    // Close on Esc key
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') closeModal();
     });
