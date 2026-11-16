@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Pierce Cookbook - Search & Filter</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen p-6">
+  <div class="max-w-6xl mx-auto">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-extrabold text-amber-500 mb-2">🔥 The Pierce Cookbook</h1>
+      <p class="text-gray-400">Search smoked meats, meal preps, slow cooker favorites, and macro recipes</p>
+    </header>
+
+    <div class="bg-gray-800 p-6 rounded-xl shadow-lg mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div>
+        <label class="block text-sm font-semibold mb-1 text-gray-300">Keyword / Ingredient</label>
+        <input type="text" id="searchInput" placeholder="e.g. Brisket, Oats, Shrimp..." 
+               class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-1 text-gray-300">Category</label>
+        <select id="categoryFilter" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+          <option value="">All Categories</option>
+          <option value="Barbecue & Smoker">Barbecue & Smoker</option>
+          <option value="High-Protein & Meal Prep">High-Protein & Meal Prep</option>
+          <option value="Crockpot & Slow Cooker">Crockpot & Slow Cooker</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-1 text-gray-300">Cook Method</label>
+        <select id="cookTypeFilter" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+          <option value="">All Cook Methods</option>
+          <option value="Smoker">Smoker</option>
+          <option value="Stovetop">Stovetop</option>
+          <option value="Slow Cooker">Slow Cooker</option>
+          <option value="No-Cook">No-Cook</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-1 text-gray-300">Max Cook Time</label>
+        <select id="timeFilter" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+          <option value="9999">Any Duration</option>
+          <option value="30">Under 30 Mins</option>
+          <option value="60">Under 1 Hour</option>
+          <option value="300">Under 5 Hours</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="recipeGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="col-span-full text-center text-gray-400 py-12">Loading recipes from Google Sheets...</div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbzMpcqFIDPFwvC-OJPy9_BfRZ5RKiiqKtQE8Uc23eeFLzis0vVfbrN55TunhssIBUkM/exec";
+    let allRecipes = [];
+
+    async function fetchRecipes() {
+      try {
+        const res = await fetch(API_URL);
+        allRecipes = await res.json();
+        renderRecipes(allRecipes);
+      } catch (err) {
+        document.getElementById('recipeGrid').innerHTML = 
+          `<div class="col-span-full text-red-400 text-center">Failed to load recipes. Please check API URL.</div>`;
+      }
+    }
+
+    function renderRecipes(recipes) {
+      const grid = document.getElementById('recipeGrid');
+      if (!recipes.length) {
+        grid.innerHTML = `<div class="col-span-full text-center text-gray-400 py-12">No matching recipes found.</div>`;
+        return;
+      }
+      grid.innerHTML = recipes.map(r => `
+        <div class="bg-gray-800 rounded-xl p-5 border border-gray-700 flex flex-col justify-between hover:border-amber-500 transition">
+          <div>
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xs uppercase font-bold text-amber-400 bg-amber-950/60 px-2.5 py-1 rounded-md">${r["Category"]}</span>
+              <span class="text-xs text-gray-400">⏱️ ${r["Cook Time (mins)"]}m</span>
+            </div>
+            <h2 class="text-xl font-bold text-white mb-2">${r["Recipe Name"]}</h2>
+            <p class="text-sm text-gray-400 mb-3">🔥 <strong>Method:</strong> ${r["Cook Type"]} | <strong>Temp:</strong> ${r["Cook Temp"]}</p>
+            
+            ${r["Calories"] ? `
+              <div class="bg-gray-900/80 p-2.5 rounded-lg mb-3 grid grid-cols-4 text-center text-xs">
+                <div><span class="block text-gray-400">Cal</span><strong class="text-amber-400">${r["Calories"]}</strong></div>
+                <div><span class="block text-gray-400">Prot</span><strong class="text-emerald-400">${r["Protein (g)"]}g</strong></div>
+                <div><span class="block text-gray-400">Carb</span><strong class="text-blue-400">${r["Carbs (g)"]}g</strong></div>
+                <div><span class="block text-gray-400">Fat</span><strong class="text-rose-400">${r["Fat (g)"]}g</strong></div>
+              </div>` : ''}
+
+            <details class="text-xs text-gray-300 mt-2">
+              <summary class="cursor-pointer text-amber-400 font-semibold">View Ingredients & Instructions</summary>
+              <div class="mt-2 text-gray-300 space-y-2">
+                <p><strong>Ingredients:</strong> ${r["Ingredients"]}</p>
+                <p><strong>Instructions:</strong> ${r["Instructions"]}</p>
+              </div>
+            </details>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterRecipes() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const cat = document.getElementById('categoryFilter').value;
+      const cook = document.getElementById('cookTypeFilter').value;
+      const maxTime = parseInt(document.getElementById('timeFilter').value);
+
+      const filtered = allRecipes.filter(r => {
+        const matchesQ = !q || r["Recipe Name"].toLowerCase().includes(q) || r["Ingredients"].toLowerCase().includes(q);
+        const matchesCat = !cat || r["Category"] === cat;
+        const matchesCook = !cook || r["Cook Type"] === cook;
+        const matchesTime = (parseInt(r["Cook Time (mins)"]) || 0) <= maxTime;
+        return matchesQ && matchesCat && matchesCook && matchesTime;
+      });
+      renderRecipes(filtered);
+    }
+
+    ['searchInput', 'categoryFilter', 'cookTypeFilter', 'timeFilter'].forEach(id => {
+      document.getElementById(id).addEventListener('input', filterRecipes);
+    });
+
+    fetchRecipes();
+  </script>
+</body>
+</html>
